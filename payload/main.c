@@ -1,5 +1,5 @@
 // Compile command: gcc main.c -o main.exe -w
-// Licence: MIT License
+// Source: https://github.com/gatariee/exe2c_sh/blob/main/tests/src/calc/main.c
 // ----------------------------------------------------------------
 
 #include <windows.h>
