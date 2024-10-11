@@ -14,10 +14,13 @@ HTML smuggling is a technique used to deliver malicious payloads (such as execut
 ![](https://outflank.nl/wp-content/uploads/2018/08/html_smuggling_explained.png)
 
 ### Usage
+
 ```
 ❯ git clone https://github.com/orbixio/http_smuggling
 ❯ cd http_smuggling
-❯ python main.py 
+❯ pip install -r requirements.txt
+❯ npm install -g javascript-obfuscator
+❯ python main.py -h
 
 ███████╗███╗   ███╗██╗   ██╗ ██████╗  ██████╗ ██╗     ███████╗██████╗
 ██╔════╝████╗ ████║██║   ██║██╔════╝ ██╔════╝ ██║     ██╔════╝██╔══██╗
@@ -26,11 +29,22 @@ HTML smuggling is a technique used to deliver malicious payloads (such as execut
 ███████║██║ ╚═╝ ██║╚██████╔╝╚██████╔╝╚██████╔╝███████╗███████╗██║  ██║
 ╚══════╝╚═╝     ╚═╝ ╚═════╝  ╚═════╝  ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝
 
-Usage: main.py <path_to_executable> <output_filename (optional)> <filename (downloaded at victim side)(optional)>
+usage: main.py [-h] [-o OUTPUT] -i INPUT [-f FILENAME]
+
+HTTP Smuggling
+
+options:
+  -h, --help            show this help message and exit
+  -o OUTPUT, --output OUTPUT
+                        Output file (default=cwd + 'payload.html')
+  -i INPUT, --input INPUT
+                        Input file to embed in payload
+  -f FILENAME, --filename FILENAME
+                        Filename that will appear in browser and download folder of victim
 ```
 **Example**
 ```
-❯ python main.py payload\main.exe payload.html Important.exe
+❯ python main.py -i payload\main.exe -o payload.html -f Important.exe
 
 ███████╗███╗   ███╗██╗   ██╗ ██████╗  ██████╗ ██╗     ███████╗██████╗
 ██╔════╝████╗ ████║██║   ██║██╔════╝ ██╔════╝ ██║     ██╔════╝██╔══██╗
@@ -45,3 +59,4 @@ Usage: main.py <path_to_executable> <output_filename (optional)> <filename (down
 ### Resources
 - https://www.outflank.nl/blog/2018/08/14/html-smuggling-explained/
 - https://github.com/Arno0x/EmbedInHTML
+- https://obfuscator.io
