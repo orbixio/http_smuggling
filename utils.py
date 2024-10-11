@@ -1,7 +1,10 @@
 import random
+import tempfile
+import subprocess
 import base64
 import os, sys
 from jsmin import jsmin
+
 
 def print_banner():
     """
@@ -21,7 +24,7 @@ def print_banner():
 def check_template_files(template_dir):
     """
     Verifies that the required template files exist in the template directory.
-    
+
     :param template_dir: The directory containing the template files.
     """
     js_template = os.path.join(template_dir, "template.js")
@@ -35,14 +38,62 @@ def check_template_files(template_dir):
         print(f"[!] HTML template file '{html_template}' not found.")
         sys.exit(1)
 
-# https://github.com/poggersbutnot/python-javascript-obfuscator/blob/main/obfuscator.py
+
 def ObfuscateJs(code):
-        """
-        A simple obfuscation method that converts the code into hexadecimal string format.
-        """
-        return "window['\\x65\x76\\x61\\x6C']('{}')".format(
-            "".join("\\x{:02x}".format(ord(c)) for c in code)
+    try:
+        result = subprocess.run(
+            ["where", "javascript-obfuscator"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True,
         )
+        javascript_obfuscator_path = result.stdout.strip().splitlines()[0] + ".cmd"
+    except subprocess.CalledProcessError as e:
+        print(f"Error finding javascript-obfuscator: {e}")
+        return None
+    
+    ofs_code = "window['\\x65\x76\\x61\\x6C']('{}')".format(
+        "".join("\\x{:02x}".format(ord(c)) for c in code)
+    )
+    
+    try:
+        # Create temporary files for input and output
+        with tempfile.NamedTemporaryFile(suffix=".js", delete=False) as temp_file:
+            temp_file_path = temp_file.name
+            temp_file.write(ofs_code.encode("utf-8"))
+
+        output_path = temp_file_path.replace(".js", "_obfuscated.js")
+
+        # Obfuscate the JavaScript code
+        subprocess.run(
+            [
+                javascript_obfuscator_path,
+                os.path.abspath(temp_file_path),
+                "--output",
+                os.path.abspath(output_path),
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+
+        # Read the obfuscated code from the output file
+        with open(output_path, "r") as output_file:
+            obfuscated_code = output_file.read()
+
+        # Clean up temporary files
+        os.remove(os.path.abspath(temp_file_path))
+        os.remove(os.path.abspath(output_path))
+
+        return obfuscated_code
+    except subprocess.CalledProcessError as e:
+        print(f"Error during obfuscation: {e}")
+        return None
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return None
+
 
 def generate_html(
     executable_path,
